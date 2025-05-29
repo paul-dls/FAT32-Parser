@@ -14,6 +14,7 @@ import sys
 from termcolor import colored
 from colorama import Fore, Style
 from prettytable import PrettyTable
+import traceback
 
 SECTOR_SIZE = 512
 MASTER_BOOT_CODE_LENGTH = 446
@@ -809,3 +810,5 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(Fore.RED + "[-] " + str(e))
+        traceback.print_exc()
+        print(Fore.WHITE)
