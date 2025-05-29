@@ -82,23 +82,26 @@ def print_message(message, type):
     elif type == 'ERROR':
         print('[' + colored('-', 'red') +  '] ' + message)      # Error
 
+
+
 # Printing Documentation:
-def print_docs(message, byte_range, size, essential=None):
-   if (essential == "yes"):
-      if (size == 1) :
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.GREEN + "ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+def print_docs(message, byte_range, size, essential=None, show_docs = True):
+   if show_docs:
+      if (essential == "yes"):
+         if (size == 1) :
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.GREEN + "ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+         else:
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.GREEN + "ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+      elif essential == "no":
+         if (size == 1) :
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.RED + "NOT ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+         else:
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.RED + "NOT ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
       else:
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.GREEN + "ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
-   elif essential == "no":
-      if (size == 1) :
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.RED + "NOT ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
-      else:
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.RED + "NOT ESSENTIAL" + Fore.WHITE + "] " + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
-   else:
-      if (size == 1) :
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
-      else:
-         print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+         if (size == 1) :
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " byte" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
+         else:
+            print("\t" + Style.BRIGHT + Fore.WHITE + "[" + Fore.MAGENTA + byte_range + Fore.WHITE + "] " + Fore.YELLOW + message + Fore.WHITE + ' (' + Fore.CYAN + str(size) + " bytes" + Fore.WHITE + ')' + Style.NORMAL + Fore.WHITE + "\n")
 
 # Raw to Hex image converter:
 def raw2hex(image_path, data=None, start=None):
@@ -504,8 +507,7 @@ if __name__ == "__main__":
 
         print_message("Bootstrap Code located in the first 446 bytes of the first 512-byte sector (MBR)", 'INFO')
         print("")
-        if (args.verbose):
-           print_docs("This area contains the code that is executed when the computer starts up. It is responsible for loading the operating system and is typically written by the operating system vendor.", "0-445", 446)
+        print_docs("This area contains the code that is executed when the computer starts up. It is responsible for loading the operating system and is typically written by the operating system vendor.", "0-445", 446, show_docs = args.verbose)
         start = 446
         while True:
            print(Style.BRIGHT + Fore.GREEN + "==> " + Fore.WHITE + "Partition n°" + Fore.CYAN + str(partition_counter+1) + Style.NORMAL + Fore.WHITE)
@@ -517,37 +519,37 @@ if __name__ == "__main__":
            else: # Checking the bootable flag:
               print("\t", end='')
               print_message(f'The Bootable Flag value is invalid !!', 'ALERT')
-           if (args.verbose) :
-              print_docs("Only two values are allowed: 0x80 means that the partition is bootable & 0x00 means that the partition is not bootable.", f"{str(start)}-{str(start)}", 1)
+
+           print_docs("Only two values are allowed: 0x80 means that the partition is bootable & 0x00 means that the partition is not bootable.", f"{str(start)}-{str(start)}", 1, show_docs = args.verbose)
            print_message("Start Head: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + startingSector_CHS(image, partition_counter)[0:2])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The head number specifies which of the disk's platters the sector is located on", f"{str(start+1)}-{str(start+1)}", 1)
+
+           print_docs("The head number specifies which of the disk's platters the sector is located on", f"{str(start+1)}-{str(start+1)}", 1, show_docs = args.verbose)
            print_message("Start Sector: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + startingSector_CHS(image, partition_counter)[2:4])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The sector number specifies which sector on the track the partition begins.", f"{str(start+2)}-{str(start+2)}", 1)
+
+           print_docs("The sector number specifies which sector on the track the partition begins.", f"{str(start+2)}-{str(start+2)}", 1, show_docs = args.verbose)
            print_message("Start Cylinder: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + startingSector_CHS(image, partition_counter)[4:6])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The cylinder number specifies which cylinder the partition begins on.", f"{str(start+3)}-{str(start+3)}", 1)
+
+           print_docs("The cylinder number specifies which cylinder the partition begins on.", f"{str(start+3)}-{str(start+3)}", 1, show_docs = args.verbose)
            print_message("File System: {}".format(Fore.GREEN + Style.BRIGHT + fileSys(image, partition_counter)) + Style.NORMAL + Fore.WHITE, 'INFO')
            FoundFileSystems.append(fileSys(image, partition_counter))
-           if (args.verbose) :
-              print_docs("The partition type field identifies the file system type that should be in the partition.", f"{str(start+4)}-{str(start+4)}", 1)
+
+           print_docs("The partition type field identifies the file system type that should be in the partition.", f"{str(start+4)}-{str(start+4)}", 1, show_docs = args.verbose)
            print_message("End Head: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + endingSector_CHS(image, partition_counter)[0:2])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The ending head value indicates the head number of the last sector in the partition.", f"{str(start+5)}-{str(start+5)}", 1)
+
+           print_docs("The ending head value indicates the head number of the last sector in the partition.", f"{str(start+5)}-{str(start+5)}", 1, show_docs = args.verbose)
            print_message("End Sector: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + endingSector_CHS(image, partition_counter)[2:4])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The ending sector value represents the sector number of the last sector in the partition.", f"{str(start+6)}-{str(start+6)}", 1)
+
+           print_docs("The ending sector value represents the sector number of the last sector in the partition.", f"{str(start+6)}-{str(start+6)}", 1, show_docs = args.verbose)
            print_message("End Cylinder: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + endingSector_CHS(image, partition_counter)[4:6])+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("The ending cylinder value represents the cylinder number of the last sector in the partition", f"{str(start+7)}-{str(start+7)}", 1)
+
+           print_docs("The ending cylinder value represents the cylinder number of the last sector in the partition", f"{str(start+7)}-{str(start+7)}", 1, show_docs = args.verbose)
            print_message("The starting sector of partition {}: {}".format(partition_counter+1, Fore.GREEN + Style.BRIGHT + str(startingSector_LBA(image, partition_counter)))+ Style.NORMAL + Fore.WHITE, 'INFO')
-           if (args.verbose) :
-              print_docs("A 32-bit value that specifies the first sector of the partition relative to the beginning of the disk.", f"{str(start+8)}-{str(start+11)}", 4)
+
+           print_docs("A 32-bit value that specifies the first sector of the partition relative to the beginning of the disk.", f"{str(start+8)}-{str(start+11)}", 4, show_docs = args.verbose)
            print_message("Partition {} contains {} sector".format(partition_counter+1, Fore.GREEN + Style.BRIGHT + str(int(totalSectors(image, partition_counter), 16)))+ Style.NORMAL + Fore.WHITE, 'INFO')
            print_message("Partition size: {} Bytes ≃ {} KB".format(Fore.GREEN + Style.BRIGHT + str(int(totalSectors(image, partition_counter), 16)*512) , round(int(totalSectors(image, partition_counter), 16)*512/1024))+ Style.NORMAL + Fore.WHITE + "\n", 'INFO')
-           if (args.verbose) :
-              print_docs("A 32-bit value that specifies the size of the partition in sectors.", f"{str(start+12)}-{str(start+15)}", 4)
+
+           print_docs("A 32-bit value that specifies the size of the partition in sectors.", f"{str(start+12)}-{str(start+15)}", 4, show_docs = args.verbose)
            
            if (partition_counter == 0) :
               table1.add_row( ["Partition {}".format(partition_counter+1), bootable(image, partition_counter), "0x" + startingSector_CHS(image, partition_counter)[0:2], "0x" + startingSector_CHS(image, partition_counter)[2:4], "0x" + startingSector_CHS(image, partition_counter)[4:6], fileSys(image, partition_counter), "0x" + endingSector_CHS(image, partition_counter)[0:2], "0x" + endingSector_CHS(image, partition_counter)[2:4], "0x" + endingSector_CHS(image, partition_counter)[4:6], startingSector_LBA(image, partition_counter), int(totalSectors(image, partition_counter), 16), round(int(totalSectors(image, partition_counter), 16)*512/1024)])
@@ -632,27 +634,27 @@ if __name__ == "__main__":
             print("---------------------------------------\n")
             sleep(1)
             print_message("Jump Code Instructions: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(jumpCode(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                               # 0x9058EB  JMP xxxx NOP
-            if args.verbose:
-               print_docs(f"Assembly instruction to jump to boot code: JMP + NOP.", "0-2", 3, "no")
+            
+            print_docs(f"Assembly instruction to jump to boot code: JMP + NOP.", "0-2", 3, "no", show_docs = args.verbose)
             print_message("OEM Name: {}".format(Fore.GREEN + Style.BRIGHT + oem(image))+ Style.NORMAL + Fore.WHITE, 'INFO')                                                              # MSDOS5.0
-            if args.verbose:
-               print_docs("OEM Name+version in Ascii.", "3-10", 8, "no")
+            
+            print_docs("OEM Name+version in Ascii.", "3-10", 8, "no", show_docs = args.verbose)
             print_message("The size of each sector in bytes: {}".format(Fore.GREEN + Style.BRIGHT + str(bytesPerSector(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                            # 512 (Must be one of 512, 1024, 2048, 4096)
             
             # Checking the size value of each sector: 
             if bytesPerSector(image) not in PREDEFINED_VALUES["BytesPerSector"]:
                print("\t", end="")
                print_message(f'This sector size value is invalid !!', 'WARNING')
-            if args.verbose:
-               print_docs("Allowed values include 512, 1024, 2048, 4096.", "11-12", 2, "yes")
+            
+            print_docs("Allowed values include 512, 1024, 2048, 4096.", "11-12", 2, "yes", show_docs = args.verbose)
             print_message("Number of Sectors Per cluster: {}".format(Fore.GREEN + Style.BRIGHT + str(sectorsPerCluster(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                      # 8 (Must be one of 1, 2, 4, 8, 16, 32, 64, 128.) 
             
             # Checking the number of sectors per cluster:
             if sectorsPerCluster(image) not in PREDEFINED_VALUES["SectorsPerCluster"]:
                print("\t", end='')
                print_message(f'The number of sectors per cluster is invalid !!', 'WARNING')
-            if args.verbose:
-               print_docs("Allowed values are powers of 2, but the cluster size must be 32KB or smaller.", "13-13", 1, "yes")
+            
+            print_docs("Allowed values are powers of 2, but the cluster size must be 32KB or smaller.", "13-13", 1, "yes", show_docs = args.verbose)
             print_message("The size of each Cluster in Bytes: {}".format(Fore.GREEN + Style.BRIGHT + str(sectorsPerCluster(image)*bytesPerSector(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')  # 4096  (A cluster should have at most 32768 bytes. In rare cases 65536 is OK.)
             
             # Checking the cluster size value:
@@ -665,114 +667,92 @@ if __name__ == "__main__":
             if reservedArea(image) < PREDEFINED_VALUES["ReservedSectors"]:
                print("\t", end='')
                print_message(f'The number of reserved sectors is invalid !! It should be greater than or equal to 32', 'WARNING')
-            if args.verbose:
-               print_docs("Size in sectors of the reserved area. FAT32 uses 32 reserved sector.", "14-15", 2, "yes")
+            
+            print_docs("Size in sectors of the reserved area. FAT32 uses 32 reserved sector.", "14-15", 2, "yes", show_docs = args.verbose)
             print_message("Number of FAT copies: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfFAT(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                                        # 2  (Typically two for redundancy, but according to Microsoft it can be one for some small storage devices.)
-            if args.verbose:
-               print_docs("Typically two for redundancy, but according to Microsoft it can be one for some small storage devices.", "16-16", 1, "yes")
+            
+            print_docs("Typically two for redundancy, but according to Microsoft it can be one for some small storage devices.", "16-16", 1, "yes", show_docs = args.verbose)
             print_message("Number of Root directory entries: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfRootDirEntries(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                 # 0  (Always 0 for FAT32)
             
             # Checking the number of root directory enties:
             if numOfRootDirEntries(image) != PREDEFINED_VALUES["NrRootDirEntries"]:
                print("\t", end='')
                print_message(f'The number of root directory entries is invalid !! It should be equal to 0, by default', 'WARNING')
-            if args.verbose:
-               print_docs("This is, by default, 0 for FAT32 and typically 512 for FAT16.", "17-18", 2, "yes")
+            
+            print_docs("This is, by default, 0 for FAT32 and typically 512 for FAT16.", "17-18", 2, "yes", show_docs = args.verbose)
             print_message("Total number of sectors in the filesystem: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfSectors(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')               # 0  (Always 0 for FAT32)
             
             # Checking the total number of sectors
             if numOfSectors(image) != PREDEFINED_VALUES["SectorsPerFilesystem"] :
                print("\t", end='')
                print_message(f'The total number of sectors is invalid !! It should be equal to 0, by default', 'WARNING')
-            if args.verbose:
-               print_docs("If the number of sectors is larger than can be represented in this 2-byte value, a 4-byte value exists later in the data structure and this should be 0.", "19-20", 2, "yes")
+            print_docs("If the number of sectors is larger than can be represented in this 2-byte value, a 4-byte value exists later in the data structure and this should be 0.", "19-20", 2, "yes", show_docs = args.verbose)
             print_message("Media Descriptor Type: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(mediaType(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                               # 0xF8 (Only 2 values are supported (0xF8 and 0xF0)) REFER HERE: https://www.win.tue.nl/~aeb/linux/fs/fat/fat-1.html 
             # Checking the Media type:
             if str(mediaType(image)) not in PREDEFINED_VALUES["MediaType"]: 
                print("\t", end='')
                print_message(f'The media descriptor type is invalid !!', 'WARNING')
-            if args.verbose:
-               print_docs("According to the Microsoft documentation, 0xf8 should be used for fixed disks and 0xf0 for removable", "21-21", 1, "no")
+            print_docs("According to the Microsoft documentation, 0xf8 should be used for fixed disks and 0xf0 for removable", "21-21", 1, "no", show_docs = args.verbose)
             print_message("Number of sectors Per FAT: {}".format(Fore.GREEN + Style.BRIGHT + str(FATSize(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                                    # 0   (Alyways 0 for FAT32)
             
             # Checking the number of sectors per FAT
             if FATSize(image) != PREDEFINED_VALUES["SectorsPerFat"]:
                print("\t", end='')
                print_message(f'The number of sectors per FAT is invalid !! It should be 0, by default', 'WARNING')
-            if args.verbose:
-               print_docs("16-bit size in sectors of each FAT for FAT12 and FAT16. For FAT32, this field is 0 by default", "22-23", 2, "yes")
+            print_docs("16-bit size in sectors of each FAT for FAT12 and FAT16. For FAT32, this field is 0 by default", "22-23", 2, "yes", show_docs = args.verbose)
             print_message("Number of sectors Per Track: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfSectorsPerTrack(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                     # 63
-            if args.verbose:
-               print_docs("Sectors per track of storage device.", "24-25", 2, "no")
+            print_docs("Sectors per track of storage device.", "24-25", 2, "no", show_docs = args.verbose)
             print_message("Number of Heads: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfHeads(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                                           # 255
-            if args.verbose:
-               print_docs("Number of heads in storage device.", "26-27", 2, "no")
+            print_docs("Number of heads in storage device.", "26-27", 2, "no", show_docs = args.verbose)
             print_message("Number of Hidden Sectors: {}".format(Fore.GREEN + Style.BRIGHT + str(numOfHiddenSectors(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                          # 8064 (Number of sectors before the start of partition)
-            if args.verbose:
-               print_docs("Hidden sectors are sectors preceding the start of partition.", "28-31", 4, "no")
+            print_docs("Hidden sectors are sectors preceding the start of partition.", "28-31", 4, "no", show_docs = args.verbose)
             print_message("Total number of sectors in the filesystem (Second value): {}".format(Fore.GREEN + Style.BRIGHT + str(totalNumberOfSectors(image)))+ Style.NORMAL + Fore.WHITE, 'INFO') # 15125184 (Either this value or the 16-bit value above must be 0.)
-            if args.verbose:
-               print_docs("32-bit value of number of sectors in file system. Either this value or the 16-bit value above must be 0.", "32-35", 4, "yes")
+            print_docs("32-bit value of number of sectors in file system. Either this value or the 16-bit value above must be 0.", "32-35", 4, "yes", show_docs = args.verbose)
             print_message("Number of Sectors Per FAT (Second Value): {}".format(Fore.GREEN + Style.BRIGHT + str(numOfHiddenSectors(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')          # 14742
-            if args.verbose:
-               print_docs("32-bit size in sectors of one File Allocation Table 'FAT'", "36-39", 2, "yes")
+            print_docs("32-bit size in sectors of one File Allocation Table 'FAT'", "36-39", 2, "yes", show_docs = args.verbose)
             print_message("Mirror Flags: " + Fore.GREEN + Style.BRIGHT + str(Flags(image)[:7]) + Fore.RED + str(Flags(image)[7]) + Fore.GREEN + str(Flags(image)[8:]) + Style.NORMAL + Fore.WHITE, 'INFO')                                                   # 0000000000000000 
-            if args.verbose:
-               print_docs("If " + Fore.RED + "bit 7 " + Fore.YELLOW + "is 1, only one of the FAT structures is active and its index is described in bits 0–3. Otherwise, all FAT structures are mirrors of each other.", "40-41", 4, "yes")
+            print_docs("If " + Fore.RED + "bit 7 " + Fore.YELLOW + "is 1, only one of the FAT structures is active and its index is described in bits 0–3. Otherwise, all FAT structures are mirrors of each other.", "40-41", 4, "yes", show_docs = args.verbose)
             print_message("Filesystem Version: {}".format(Fore.GREEN + Style.BRIGHT + str(FAT32_version(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                                     # 0 (HighByte = Major Version, Low Byte = Minor Version)
-            if args.verbose:
-               print_docs("The major and minor version number => High Byte = Major Version, Low Byte = Minor Version", "42-43", 2, "yes")
+            print_docs("The major and minor version number => High Byte = Major Version, Low Byte = Minor Version", "42-43", 2, "yes", show_docs = args.verbose)
             print_message("First cluster of root directory: {}".format(Fore.GREEN + Style.BRIGHT + str(RootDirClusterNumber(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                 # 2 (Usually 2)
-            if args.verbose:
-               print_docs("Cluster where root directory can be found. Usually 2.", "44-47", 4, "yes")
+            print_docs("Cluster where root directory can be found. Usually 2.", "44-47", 4, "yes", show_docs = args.verbose)
             print_message("Sector Number of Filesystem Information (FSINFO): {}".format(Fore.GREEN + Style.BRIGHT + str(FSINFOSectorNumber(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')  # 1 (Ususally 1)
-            if args.verbose:
-               print_docs("Sector where FSINFO structure can be found. Usually 1.", "48-49", 2, "no")
+            print_docs("Sector where FSINFO structure can be found. Usually 1.", "48-49", 2, "no", show_docs = args.verbose)
             print_message("Sector Number of Boot Sector Backup Copy: {}".format(Fore.GREEN + Style.BRIGHT + str(BackupBootSector(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')            # 6 (Ususally 6)
-            if args.verbose:
-               print_docs("Sector where backup copy of boot sector is located. (Default is 6)", "50-51", 2, "no")
+            print_docs("Sector where backup copy of boot sector is located. (Default is 6)", "50-51", 2, "no", show_docs = args.verbose)
             # .... SKIPPING 12 BYTES OF RESERVED AREA ....
-            if args.verbose:
-               print_docs("RESERVED", "52-63", "no", 12)
+            print_docs("RESERVED", "52-63", "no", 12, show_docs = args.verbose)
             print_message("BIOS INT13h drive number: {}".format(Fore.GREEN + Style.BRIGHT + str(BIOSDriveNumber(image)))+ Style.NORMAL + Fore.WHITE, 'INFO')                             # 0 (Usually 0 or 0x80)
-            if args.verbose:
-               print_docs("Logical Drive Number ofPartition. Usually 0 or 0x80", "64-64", 1, "no")
+            print_docs("Logical Drive Number ofPartition. Usually 0 or 0x80", "64-64", 1, "no", show_docs = args.verbose)
             # .... SKIPPING 1 UNUSED BYTE (used to be Current Head (used by Windows NT) => This line will be printed if in verbose mode
-            if args.verbose:
-               print_docs("NOT USED. Used to be Current Head (used by Windows NT)", "65-65", 1, "no")
+            print_docs("NOT USED. Used to be Current Head (used by Windows NT)", "65-65", 1, "no", show_docs = args.verbose)
             print_message("Extended Boot Signature: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(extendedBootSignature(image))) + Style.NORMAL + Fore.WHITE, 'INFO')                # 0x29  (Default: 0x29 =>  Indicates that the three following fields are present.)
             
             # Checking the extended boot signature value:
             if str(extendedBootSignature(image)) != PREDEFINED_VALUES["ExtendedBootSignature"] :
                print("\t", end='')
                print_message(f'The extended boot signature is invalid !! It should be 0x29, by default', 'WARNING')
-            if args.verbose:
-               print_docs("Extended boot signature to identify if the next three values are valid. Default is 0x29", "66-66", 1, "no")
+            print_docs("Extended boot signature to identify if the next three values are valid. Default is 0x29", "66-66", 1, "no", show_docs = args.verbose)
             print_message("Serial Number of the Partition: {}".format(Fore.GREEN + Style.BRIGHT + str(partitionSerialNumber(image))) + Style.NORMAL + Fore.WHITE, 'INFO')                # 2955781185 (Some versions of Windows will calculate this based on the creation date and time.)
-            if args.verbose:
-               print_docs("Volume serial number, which some versions of Windows will calculate based on the creation date and time.", "67-70", 4, "no")
+            print_docs("Volume serial number, which some versions of Windows will calculate based on the creation date and time.", "67-70", 4, "no", show_docs = args.verbose)
             print_message("Volume name of the Partition: {}".format(Fore.GREEN + Style.BRIGHT + volumeName(image)) + Style.NORMAL + Fore.WHITE, 'INFO')                                  # "NO NAME"
-            if args.verbose:
-               print_docs("Volume label in ASCII. The user chooses this value when creating the file system.", "71-81", 11, "no")
+            print_docs("Volume label in ASCII. The user chooses this value when creating the file system.", "71-81", 11, "no", show_docs = args.verbose)
             print_message("Filesystem Type Label: {}".format(Fore.GREEN + Style.BRIGHT + FileSystemType(image)) + Style.NORMAL + Fore.WHITE, 'INFO')                                     # "FAT32"
             
             # Checking the filesystem type label:
             if PREDEFINED_VALUES["FileSystemLabel"] not in FileSystemType(image):
                print("\t", end='')
                print_message(f'The file system label may be invalid !! It should be FAT32 but nothing is required, by default', 'WARNING')
-            if args.verbose:
-               print_docs("File system type label in ASCII. Standard values include 'FAT32', but nothing is required.", "72-89", 8, "no")
+            print_docs("File system type label in ASCII. Standard values include 'FAT32', but nothing is required.", "72-89", 8, "no", show_docs = args.verbose)
             # .... SKIPPING 420 Bytes of Executable Code ....
-            if args.verbose:
-               print_docs("NOT USED.", "90–509", 420, "no")
+            print_docs("NOT USED.", "90–509", 420, "no", show_docs = args.verbose)
             print_message("Boot Sector Signature: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(BootRecordSignature_1(image)).upper()) + Style.NORMAL + Fore.WHITE, 'INFO')          # 0xAA55 (Default 0xAA55)
             
             # Checking the boot sector signature:
             if BootRecordSignature_1(image) != PREDEFINED_VALUES["BootSectorSignature"] :
                print("\t", end='')
                print_message(f'The boot sector signature is invalid !! It should be 0xAA55, by default', 'ALERT')
-            if args.verbose:
-               print_docs("Signature value. Default is 0xAA55", "510-511", 2, "no")
+            print_docs("Signature value. Default is 0xAA55", "510-511", 2, "no", show_docs = args.verbose)
             FSINFO_StartingSector[i+1] = FSINFOSectorNumber(image)
 
             if (args.partition == str(i+1)) :
@@ -796,36 +776,29 @@ if __name__ == "__main__":
            if FSINFOSignature_1(image) != PREDEFINED_VALUES["FSINFO_Signature1"] :
               print("\t", end='')
               print_message(f'The first FSINFO signature may be invalid !! It should be 0x41615252, but nothing is required', 'WARNING')
-           if args.verbose:
-              print_docs("FSINFO first signature. Default is 0x41615252.", "0-3", 4, "no")
+           print_docs("FSINFO first signature. Default is 0x41615252.", "0-3", 4, "no", show_docs = args.verbose)
            # .... SKIPPING 480 Bytes UNUSED .... #
-           if args.verbose:
-              print_docs("NOT USED.", "5-483", 480, "no")
+           print_docs("NOT USED.", "5-483", 480, "no", show_docs = args.verbose)
            print_message("Second FSINFO Signature: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(FSINFOSignature_2(image))) + Style.NORMAL + Fore.WHITE, 'INFO')    # 0x61417272 
            
            # Checking the second fsinfo signature value:
            if FSINFOSignature_2(image) != PREDEFINED_VALUES["FSINFO_Signature2"] :
               print("\t", end='')
               print_message(f'The second FSINFO signature may be invalid !! It should be 0x61417272, but nothing is required', 'WARNING')
-           if args.verbose:
-              print_docs("FSINFO second signature. Default is 0x61417272.", "484-487", 4, "no")
+           print_docs("FSINFO second signature. Default is 0x61417272.", "484-487", 4, "no", show_docs = args.verbose)
            print_message("Number of free clusters: {}".format(Fore.GREEN + Style.BRIGHT + str(NumOfFreeClusters(image))) + Style.NORMAL + Fore.WHITE, 'INFO')           # 1084620
-           if args.verbose:
-              print_docs("This one is set to 1 if unkown.", "488-491", 4, "no")  
+           print_docs("This one is set to 1 if unkown.", "488-491", 4, "no", show_docs = args.verbose)  
            print_message("Sector number of the next free cluster: {}".format(Fore.GREEN + Style.BRIGHT + str(NextFreeClusterSectorNumber(image))) + Style.NORMAL + Fore.WHITE, 'INFO')  # 3
-           if args.verbose:
-              print_docs("Cluster Number of Cluster that was Most Recently Allocated.", "492-495", 4, "no")  
+           print_docs("Cluster Number of Cluster that was Most Recently Allocated.", "492-495", 4, "no", show_docs = args.verbose)  
            # .... SKIPPING 12 Bytes RESERVED .... #
-           if args.verbose:
-              print_docs("NOT USED", "496-507", 12, "no")
+           print_docs("NOT USED", "496-507", 12, "no", show_docs = args.verbose)
            print_message("FSINFO Sector Signature: {}".format(Fore.GREEN + Style.BRIGHT + "0x" + str(FsinfoSectorSignature(image)).upper()) + Style.NORMAL + Fore.WHITE, 'INFO')      # 0xAA550000
            
            # Checking the fsinfo sector signature value:
            if FsinfoSectorSignature(image) != PREDEFINED_VALUES["FSINFOSector_Signature"] :
               print("\t", end='')
               print_message(f'The FSINFO sector signature is invalid !! It should be 0xAA550000', 'WARNING')
-           if args.verbose:
-              print_docs("Signature. Default is 0xAA550000", "508-511", 4, "no")
+           print_docs("Signature. Default is 0xAA550000", "508-511", 4, "no", show_docs = args.verbose)
 
     except KeyboardInterrupt:
         print("\n")
