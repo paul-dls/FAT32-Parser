@@ -814,11 +814,9 @@ def new_data_block(address, data, args):
   
    if address == 0:
       parseMasterBootRecord(args, data)
-   return 
-   if address in Partitions_StartingSector:
-      parseBootSector(args, data, partition_number=0)
-
-   if address in FSINFO_StartingSector:
+   elif address in Partitions_StartingSector:
+      parseBootSector(args, data, partition_number = 0)
+   elif address in FSINFO_StartingSector:
       parseFSINFO(args, data, key=address)
 
 
@@ -829,15 +827,18 @@ def new_data_block(address, data, args):
 
 
 def process_csv_and_feed_blocks(args):
-    """
-    Reads the CSV file, finds each DATA_BLOCK row,
-    gets the address from the previous CMD17 row,
-    and calls new_data_block(address, data).
-    """
-    last_address = None
-    with open(args.csv, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
+   """
+   Reads the CSV file, finds each DATA_BLOCK row,
+   gets the address from the previous CMD17 row,
+   and calls new_data_block(address, data).
+   """
+   last_address = None
+   # Open the CSV file, replacing NUL characters with nothing to avoid errors
+   with open(args.csv, newline='', encoding='utf-8', errors='replace') as csvfile:
+      # Read and clean each line to remove NUL characters
+      cleaned_lines = (line.replace('\x00', '') for line in csvfile)
+      reader = csv.DictReader(cleaned_lines)
+      for row in reader:
             #print("Processing row:", row)
             miso_data = row.get('miso_data', '')
             mosi_data = row.get('mosi_data', '')
@@ -853,8 +854,10 @@ def process_csv_and_feed_blocks(args):
                if data_match:
                   data = data_match.group(1).strip()
                   #TO DO : we should not have to pad with zero, find why data is not 512 bytes long
-                  data = data + "00000"
-                  data = data.zfill(1032)
+                  #data = data + "0000"
+                  if len(data) < 1028:
+                     print_message("DATA_BLOCK is only " + str(len(data)/2) + " bytes, padding with zeros", 'WARNING')
+                     data = data.zfill(1028)
 
                   print("Found DATA_BLOCK s:", data)
 
